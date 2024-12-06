@@ -3,6 +3,7 @@ import asyncio
 import os
 import datetime
 import sys
+from tqdm import tqdm
 
 async def my_function(TEXT, voice, rate, volume, output):
     tts = edge_tts.Communicate(text=TEXT, voice=voice, rate=rate, volume=volume)
@@ -45,7 +46,7 @@ voice = 'zh-CN-XiaoxiaoNeural'
 rate = '+0%'
 volume = '+0%'
 
-async def process_file(indir, i, voice, rate, volume, padding_length):
+async def process_file(indir, i, voice, rate, volume, padding_length, pbar):
     j = "{:0{}d}".format(i, padding_length)
     with open(f'{indir}/{j}.txt', 'rb') as f:
         data = f.read()
@@ -53,19 +54,20 @@ async def process_file(indir, i, voice, rate, volume, padding_length):
 
     output = f'out/{j}.mp3'
     from_time = datetime.datetime.now()
-    print('\033[38;2;0;204;255m' + f'{j}.txt -> {j}.mp3 TIME: 0.00s' + '\033[0m', end='\r')
     
     await my_function(TEXT, voice, rate, volume, output)
     
     to_time = datetime.datetime.now()
     elapsed_time = (to_time - from_time).total_seconds()
-    print('\033[38;2;50;205;50m' + f'{j}.txt successed TIME: {elapsed_time:.2f}s' + '\033[0m')
+    pbar.update(1)
+    pbar.set_description(f'{j}.txt successed TIME: {elapsed_time:.2f}s')
 
 async def main(indir, iL, to, voice, rate, volume, batch_size=10):
-    for start in range(iL, to + 1, batch_size):
-        end = min(start + batch_size - 1, to)
-        tasks = [process_file(indir, i, voice, rate, volume, padding_length) for i in range(start, end + 1)]
-        await asyncio.gather(*tasks)
+    with tqdm(total=to - iL + 1, desc="Processing", unit="file") as pbar:
+        for start in range(iL, to + 1, batch_size):
+            end = min(start + batch_size - 1, to)
+            tasks = [process_file(indir, i, voice, rate, volume, padding_length, pbar) for i in range(start, end + 1)]
+            await asyncio.gather(*tasks)
 
 # 记录程序开始时间
 start_time = datetime.datetime.now()
