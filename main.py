@@ -166,8 +166,9 @@ def validate_results(file_list):
 async def main():
     """修复后的主工作流"""
     print("\033[36m" + "="*40)
-    print("Edge-TTS 交互式批量处理器")
-    print(f"版本：edge_tts-{edge_tts.__version__}")
+    print("Novel 2 MP3")
+    print("版本:1.5.1")
+    print(f"edga_tts版本：edge_tts-{edge_tts.__version__}")
     print("="*40 + "\033[0m")
     
     validate_directories()
