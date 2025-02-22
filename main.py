@@ -13,7 +13,7 @@ CONFIG = {
     'voice': 'zh-CN-XiaoxiaoNeural',
     'rate': '+0%',
     'volume': '+0%',
-    'batch_size': 5
+    'batch_size': 10
 }
 
 async def text_to_speech(text, voice, rate, volume, output_path):
