@@ -84,7 +84,7 @@ async def process_file(filename, pbar):
         return (filename, str(e))
 
 async def get_user_choice(prompt):
-    """异步获取用户输入"""
+    """修复后的异步输入函数"""
     loop = asyncio.get_event_loop()
     return await loop.run_in_executor(None, input, prompt)
 
@@ -111,14 +111,14 @@ async def batch_processor(file_list, pbar):
                 print(f"• {f}: {err}")
             print("="*40 + "\033[0m")
             
-            # 获取用户选择
-            choice = await get_user_choice(
+            # 获取用户选择（修复await使用）
+            choice = (await get_user_choice(
                 "请检查错误后选择操作：\n"
                 " [C] 继续处理后续批次\n"
                 " [R] 重试当前批次\n"
                 " [Q] 退出程序\n"
                 "请输入选择（C/R/Q）："
-            ).lower()
+            )).lower()
             
             if choice == 'q':
                 print("\n\033[33m用户终止程序\033[0m")
@@ -164,7 +164,7 @@ def validate_results(file_list):
         print("\033[0m")
 
 async def main():
-    """主工作流"""
+    """修复后的主工作流"""
     print("\033[36m" + "="*40)
     print("Edge-TTS 交互式批量处理器")
     print(f"版本：edge_tts-{edge_tts.__version__}")
@@ -173,10 +173,10 @@ async def main():
     validate_directories()
     file_list = get_input_files()
     
-    # 用户确认
-    confirm = await get_user_choice(
+    # 用户确认（修复await使用）
+    confirm = (await get_user_choice(
         f"即将处理 {len(file_list)} 个文件，确认继续？(y/N) "
-    ).lower()
+    )).lower()
     if confirm != 'y':
         print("操作已取消")
         return
@@ -194,13 +194,7 @@ async def main():
     print(f"\n\033[32m总耗时: {total_time:.2f}秒\033[0m")
 
 if __name__ == "__main__":
-    # 依赖检查
-    os.system("pip install --upgrade edge-tts > /dev/null 2>&1")
-    
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
         print("\n\033[33m用户中断操作\033[0m")
-    finally:
-        if os.path.exists(".breakpointfile"):
-            os.remove(".breakpointfile")
