@@ -164,17 +164,17 @@ def validate_results(file_list):
         print("\033[0m")
 
 async def main():
-    """修复后的主工作流"""
     print("\033[36m" + "="*40)
     print("Novel 2 MP3")
     print("版本:1.5.1")
     print(f"edga_tts版本：edge_tts-{edge_tts.__version__}")
     print("="*40 + "\033[0m")
+    print(f"本次工作线程数:{CONFIG['batch_size']}")
     
     validate_directories()
     file_list = get_input_files()
     
-    # 用户确认（修复await使用）
+    # 用户确认
     confirm = (await get_user_choice(
         f"即将处理 {len(file_list)} 个文件，确认继续？(y/N) "
     )).lower()
